@@ -1,0 +1,14 @@
+[
+    {
+        "id": 1,
+        "name": "John Doe",
+        "location": "Town Square",
+        "description": "A friendly merchant."
+    },
+    {
+        "id": 2,
+        "name": "Jane Smith",
+        "location": "The Tavern",
+        "description": "A mysterious traveler."
+    }
+]
