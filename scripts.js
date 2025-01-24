@@ -45,17 +45,67 @@ function editNPC(npc) {
     }
 }
 
-// Function to save NPCs to an HTML file
 function saveToFile() {
     const npcs = JSON.parse(localStorage.getItem('npcs')) || [];
-    let htmlContent = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>NPCs</title></head><body>';
-    htmlContent += '<h1>NPC List</h1><ul>';
+    let htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>NPCs</title>
+        <style>
+            body { font-family: Arial, sans-serif; }
+            .npc-item { cursor: pointer; }
+        </style>
+    </head>
+    <body>
+        <h1>NPC List</h1>
+        <div class="npc-list">
+            <ul>`;
 
     npcs.forEach(npc => {
-        htmlContent += `<li><strong>Name:</strong> ${npc.name}, <strong>Location:</strong> ${npc.location}, <strong>Description:</strong> ${npc.description}</li>`;
+        htmlContent += `<li><strong>Name:</strong> <input type="text" value="${npc.name}" /> <strong>Location:</strong> <input type="text" value="${npc.location}" /> <strong>Description:</strong> <input type="text" value="${npc.description}" /></li>`;
     });
 
-    htmlContent += '</ul></body></html>';
+    htmlContent += `</ul>
+        </div>
+        <button onclick="saveChanges()">Save Changes</button>
+        <script>
+            function saveChanges() {
+                const inputs = document.querySelectorAll('.npc-list input');
+                const newNpcs = [];
+                for (let i = 0; i < inputs.length; i += 3) {
+                    newNpcs.push({
+                        name: inputs[i].value,
+                        location: inputs[i + 1].value,
+                        description: inputs[i + 2].value
+                    });
+                }
+                const newHtmlContent = \`<!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>NPCs</title>
+                </head>
+                <body>
+                    <h1>NPC List</h1>
+                    <ul>\${newNpcs.map(npc => \`<li><strong>Name:</strong> \${npc.name}, <strong>Location:</strong> \${npc.location}, <strong>Description:</strong> \${npc.description}</li>\`).join('')}</ul>
+                    <button onclick="window.close()">Close</button>
+                </body>
+                </html>\`;
+                const blob = new Blob([newHtmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'npcs.html'; // The name of the file to be downloaded
+                document.body.appendChild(a);
+                a.click(); // Programmatically click the link to trigger the download
+                document.body.removeChild(a); // Clean up
+                URL.revokeObjectURL(url); // Free up memory
+            }
+        </script>
+    </body>
+    </html>`;
 
     // Create a Blob from the HTML string
     const blob = new Blob([htmlContent], { type: 'text/html' });
